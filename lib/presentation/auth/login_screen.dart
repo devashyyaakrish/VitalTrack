@@ -3,7 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/constants/app_strings.dart';
 import '../../core/utils/validators.dart';
-import '../../core/utils/extensions.dart';
+import '../../core/theme/app_colors.dart';
+import '../../core/components/gradient_scaffold.dart';
+import '../../core/components/glass_card.dart';
+import '../../core/components/glass_button.dart';
+import '../../core/components/glass_input_field.dart';
 import 'bloc/auth_bloc.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -13,16 +17,39 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends State<LoginScreen>
+    with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _emailCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
   bool _obscurePassword = true;
+  late AnimationController _logoController;
+  late Animation<double> _logoScale;
+  late Animation<double> _logoOpacity;
+
+  @override
+  void initState() {
+    super.initState();
+    _logoController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    );
+    _logoScale = Tween<double>(begin: 0.6, end: 1.0).animate(
+      CurvedAnimation(parent: _logoController, curve: Curves.elasticOut),
+    );
+    _logoOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+          parent: _logoController,
+          curve: const Interval(0.0, 0.5, curve: Curves.easeIn)),
+    );
+    _logoController.forward();
+  }
 
   @override
   void dispose() {
     _emailCtrl.dispose();
     _passwordCtrl.dispose();
+    _logoController.dispose();
     super.dispose();
   }
 
@@ -37,12 +64,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return GradientScaffold(
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthErrorState) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message), backgroundColor: context.theme.colorScheme.error),
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: AppColors.error,
+              ),
             );
           }
         },
@@ -52,94 +82,159 @@ class _LoginScreenState extends State<LoginScreen> {
           return SafeArea(
             child: Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24.0),
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
                 child: Form(
                   key: _formKey,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // App Logo / Title
-                      Icon(Icons.health_and_safety, size: 80, color: context.colorScheme.primary),
-                      const SizedBox(height: 16),
-                      Text(
-                        AppStrings.appName,
-                        textAlign: TextAlign.center,
-                        style: context.textTheme.displayLarge?.copyWith(
-                          color: context.colorScheme.primary,
+                      // ── Animated Logo ──────────────────────────────────
+                      AnimatedBuilder(
+                        animation: _logoController,
+                        builder: (context, child) => Opacity(
+                          opacity: _logoOpacity.value,
+                          child: Transform.scale(
+                            scale: _logoScale.value,
+                            child: child,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        AppStrings.appTagline,
-                        textAlign: TextAlign.center,
-                        style: context.textTheme.bodyMedium,
+                        child: Column(
+                          children: [
+                            Container(
+                              width: 88,
+                              height: 88,
+                              decoration: BoxDecoration(
+                                gradient: AppColors.heroGradient,
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppColors.primary.withOpacity(0.4),
+                                    blurRadius: 32,
+                                    spreadRadius: 4,
+                                  ),
+                                ],
+                              ),
+                              child: const Icon(
+                                Icons.health_and_safety_rounded,
+                                size: 46,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            ShaderMask(
+                              shaderCallback: (bounds) =>
+                                  AppColors.primaryGradient.createShader(bounds),
+                              child: const Text(
+                                AppStrings.appName,
+                                style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 34,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: -1.2,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              AppStrings.appTagline,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontFamily: 'Inter',
+                                fontSize: 14,
+                                color: Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.textSecondaryDark
+                                    : AppColors.textSecondaryLight,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                       const SizedBox(height: 48),
 
-                      // Email Field
-                      TextFormField(
-                        controller: _emailCtrl,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: const InputDecoration(
-                          labelText: AppStrings.emailLabel,
-                          prefixIcon: Icon(Icons.email_outlined),
-                        ),
-                        validator: Validators.validateEmail,
-                        textInputAction: TextInputAction.next,
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Password Field
-                      TextFormField(
-                        controller: _passwordCtrl,
-                        obscureText: _obscurePassword,
-                        decoration: InputDecoration(
-                          labelText: AppStrings.passwordLabel,
-                          prefixIcon: const Icon(Icons.lock_outline),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                      // ── Glass Form Card ────────────────────────────────
+                      GlassCard(
+                        padding: const EdgeInsets.all(24),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            GlassInputField(
+                              controller: _emailCtrl,
+                              hintText: AppStrings.emailLabel,
+                              prefixIcon: Icons.email_outlined,
+                              keyboardType: TextInputType.emailAddress,
+                              textInputAction: TextInputAction.next,
+                              validator: Validators.validateEmail,
                             ),
-                            onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                          ),
+                            const SizedBox(height: 16),
+
+                            GlassInputField(
+                              controller: _passwordCtrl,
+                              hintText: AppStrings.passwordLabel,
+                              prefixIcon: Icons.lock_outline_rounded,
+                              obscureText: _obscurePassword,
+                              textInputAction: TextInputAction.done,
+                              validator: Validators.validatePassword,
+                              onSubmitted: (_) => _submit(),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscurePassword
+                                      ? Icons.visibility_off_outlined
+                                      : Icons.visibility_outlined,
+                                  color: AppColors.textSecondaryDark,
+                                  size: 20,
+                                ),
+                                onPressed: () => setState(
+                                    () => _obscurePassword = !_obscurePassword),
+                              ),
+                            ),
+                            const SizedBox(height: 28),
+
+                            GlassButton(
+                              label: AppStrings.signIn,
+                              onPressed: isLoading ? null : _submit,
+                              isLoading: isLoading,
+                            ),
+                            const SizedBox(height: 14),
+
+                            GlassButton.outlined(
+                              label: AppStrings.googleSignIn,
+                              icon: Icons.g_mobiledata,
+                              onPressed: isLoading
+                                  ? null
+                                  : () => context
+                                      .read<AuthBloc>()
+                                      .add(AuthSignInWithGoogleEvent()),
+                            ),
+                          ],
                         ),
-                        validator: Validators.validatePassword,
-                        onFieldSubmitted: (_) => _submit(),
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 28),
 
-                      // Login Button
-                      ElevatedButton(
-                        onPressed: isLoading ? null : _submit,
-                        child: isLoading
-                            ? const SizedBox(
-                                height: 24,
-                                width: 24,
-                                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                              )
-                            : const Text(AppStrings.signIn),
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Google Sign In
-                      OutlinedButton.icon(
-                        onPressed: isLoading
-                            ? null
-                            : () => context.read<AuthBloc>().add(AuthSignInWithGoogleEvent()),
-                        icon: const Icon(Icons.g_mobiledata, size: 28),
-                        label: const Text(AppStrings.googleSignIn),
-                      ),
-                      const SizedBox(height: 32),
-
-                      // Register Link
+                      // ── Register Link ──────────────────────────────────
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(AppStrings.noAccount, style: context.textTheme.bodyMedium),
+                          Text(
+                            AppStrings.noAccount,
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 14,
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? AppColors.textSecondaryDark
+                                  : AppColors.textSecondaryLight,
+                            ),
+                          ),
                           TextButton(
                             onPressed: () => context.push('/register'),
-                            child: const Text(AppStrings.signUp),
+                            child: const Text(
+                              AppStrings.signUp,
+                              style: TextStyle(
+                                fontFamily: 'Inter',
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.primary,
+                              ),
+                            ),
                           ),
                         ],
                       ),

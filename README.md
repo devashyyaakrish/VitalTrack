@@ -1,6 +1,6 @@
 # VitalTrack
 
-A cross-platform personal health tracker built with Flutter.
+A comprehensive, production-ready health tracking application built with Flutter that works seamlessly on both **iOS** and **Android**.
 
 ![VitalTrack](https://via.placeholder.com/800x400?text=VitalTrack+App)
 

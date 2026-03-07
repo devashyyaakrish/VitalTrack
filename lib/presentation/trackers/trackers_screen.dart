@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../core/constants/app_strings.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/extensions.dart';
 import '../../core/utils/date_utils.dart';
+import '../../core/components/glass_card.dart';
+import '../../core/components/glass_button.dart';
+import '../../core/components/metric_ring.dart';
+import '../../core/components/animated_loader.dart';
 import '../health/health_cubits.dart' as hc;
 import '../health/health_cubits.dart' hide StepState;
 
@@ -15,14 +18,14 @@ class TrackersScreen extends StatefulWidget {
   State<TrackersScreen> createState() => _TrackersScreenState();
 }
 
-class _TrackersScreenState extends State<TrackersScreen> with SingleTickerProviderStateMixin {
+class _TrackersScreenState extends State<TrackersScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
-    // Load initial data for all tabs
     context.read<WaterCubit>().loadTodayEntries();
     context.read<StepCubit>().loadTodaySteps();
     context.read<CalorieCubit>().loadTodayEntries();
@@ -38,20 +41,54 @@ class _TrackersScreenState extends State<TrackersScreen> with SingleTickerProvid
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: const Text('Health Trackers'),
-        bottom: TabBar(
-          controller: _tabController,
-          isScrollable: true,
-          labelColor: context.theme.colorScheme.primary,
-          unselectedLabelColor: context.theme.textTheme.bodySmall?.color,
-          indicatorColor: context.theme.colorScheme.primary,
-          tabs: const [
-            Tab(icon: Icon(Icons.water_drop), text: 'Water'),
-            Tab(icon: Icon(Icons.directions_walk), text: 'Steps'),
-            Tab(icon: Icon(Icons.local_dining), text: 'Food'),
-            Tab(icon: Icon(Icons.bedtime), text: 'Sleep'),
-          ],
+        title: const Text(
+          'Health Trackers',
+          style: TextStyle(
+            fontFamily: 'Inter',
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor: AppColors.backgroundDark2,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(52),
+          child: Container(
+            margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            decoration: BoxDecoration(
+              color: AppColors.glassWhite,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppColors.glassBorder),
+            ),
+            child: TabBar(
+              controller: _tabController,
+              isScrollable: false,
+              labelPadding: EdgeInsets.zero,
+              labelColor: Colors.white,
+              unselectedLabelColor: AppColors.textSecondaryDark,
+              indicator: BoxDecoration(
+                gradient: AppColors.primaryGradient,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              dividerColor: Colors.transparent,
+              labelStyle: const TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+              ),
+              unselectedLabelStyle: const TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 12,
+              ),
+              tabs: const [
+                Tab(text: '💧 Water'),
+                Tab(text: '🏃 Steps'),
+                Tab(text: '🍎 Food'),
+                Tab(text: '🌙 Sleep'),
+              ],
+            ),
+          ),
         ),
       ),
       body: TabBarView(
@@ -67,7 +104,7 @@ class _TrackersScreenState extends State<TrackersScreen> with SingleTickerProvid
   }
 }
 
-// ── Water Tab ─────────────────────────────────────────────────────────────────
+// ── Water Tab ──────────────────────────────────────────────────────────────────
 
 class _WaterTab extends StatelessWidget {
   const _WaterTab();
@@ -77,32 +114,108 @@ class _WaterTab extends StatelessWidget {
     showDialog(
       context: context,
       builder: (ctx) => StatefulBuilder(
-        builder: (context, setState) => AlertDialog(
-          title: const Text('Add Water'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('$amount ml', style: context.textTheme.displaySmall),
-              Slider(
-                value: amount.toDouble(),
-                min: 50,
-                max: 1000,
-                divisions: 19,
-                label: '$amount ml',
-                onChanged: (val) => setState(() => amount = val.toInt()),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-            ElevatedButton(
-              onPressed: () {
-                context.read<WaterCubit>().addWater(amount);
-                Navigator.pop(ctx);
-              },
-              child: const Text('Add'),
+        builder: (context, setState) => Dialog(
+          backgroundColor: Colors.transparent,
+          child: GlassCard(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.water_drop_rounded,
+                    color: AppColors.waterColor, size: 36),
+                const SizedBox(height: 8),
+                const Text(
+                  'How much did you drink?',
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimaryDark,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  '$amount ml',
+                  style: const TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 36,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.waterColor,
+                    letterSpacing: -1,
+                  ),
+                ),
+                SliderTheme(
+                  data: SliderThemeData(
+                    activeTrackColor: AppColors.waterColor,
+                    inactiveTrackColor: AppColors.waterColor.withOpacity(0.2),
+                    thumbColor: AppColors.waterColor,
+                    overlayColor: AppColors.waterColor.withOpacity(0.2),
+                  ),
+                  child: Slider(
+                    value: amount.toDouble(),
+                    min: 50,
+                    max: 1000,
+                    divisions: 19,
+                    onChanged: (val) => setState(() => amount = val.toInt()),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                // Quick picks
+                Wrap(
+                  spacing: 8,
+                  children: [150, 200, 250, 350, 500].map((ml) {
+                    return GestureDetector(
+                      onTap: () => setState(() => amount = ml),
+                      child: Chip(
+                        label: Text('$ml ml'),
+                        backgroundColor: amount == ml
+                            ? AppColors.waterColor.withOpacity(0.3)
+                            : AppColors.glassWhite,
+                        labelStyle: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 12,
+                          color: amount == ml
+                              ? AppColors.waterColor
+                              : AppColors.textSecondaryDark,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        side: BorderSide(
+                          color: amount == ml
+                              ? AppColors.waterColor
+                              : AppColors.glassBorder,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    Expanded(
+                      child: GlassButton.outlined(
+                        label: 'Cancel',
+                        onPressed: () => Navigator.pop(ctx),
+                        height: 44,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: GlassButton(
+                        label: 'Add',
+                        onPressed: () {
+                          context.read<WaterCubit>().addWater(amount);
+                          Navigator.pop(ctx);
+                        },
+                        height: 44,
+                        gradient: AppColors.waterGradient,
+                        glowColor: AppColors.waterColor.withOpacity(0.4),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -112,50 +225,31 @@ class _WaterTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<WaterCubit, WaterState>(
       builder: (context, state) {
-        if (state.isLoading) return const Center(child: CircularProgressIndicator());
-
-        return Column(
-          children: [
-            const SizedBox(height: 32),
-            Stack(
-              alignment: Alignment.center,
-              children: [
-                SizedBox(
-                  height: 200,
-                  width: 200,
-                  child: CircularProgressIndicator(
-                    value: state.progress,
-                    strokeWidth: 16,
-                    backgroundColor: AppColors.progressTrackLight, // Adapt for dark mode as needed
-                    color: AppColors.waterColor,
-                  ),
-                ),
-                Column(
-                  children: [
-                    const Icon(Icons.water_drop, color: AppColors.waterColor, size: 40),
-                    const SizedBox(height: 8),
-                    Text('${state.totalMl}', style: context.textTheme.displayMedium),
-                    Text('/ ${state.goalMl} ml', style: context.textTheme.bodyMedium),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 32),
-            ElevatedButton.icon(
-              onPressed: () => _showAddWaterDialog(context),
-              icon: const Icon(Icons.add),
-              label: const Text('Drink Water'),
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.waterColor),
-            ),
-            const Expanded(child: SizedBox()),
-          ],
+        if (state.isLoading) return const Center(child: AnimatedLoader(color: AppColors.waterColor));
+        return _TrackerTabLayout(
+          ring: MetricRing(
+            progress: state.progress,
+            value: '${state.totalMl}',
+            unit: 'ml',
+            icon: Icons.water_drop_rounded,
+            gradient: AppColors.waterGradient,
+          ),
+          actionButton: GlassButton(
+            label: 'Add Water',
+            icon: Icons.add_rounded,
+            gradient: AppColors.waterGradient,
+            glowColor: AppColors.waterColor.withOpacity(0.4),
+            onPressed: () => _showAddWaterDialog(context),
+            width: 200,
+          ),
+          goalText: 'Goal: ${state.goalMl} ml',
         );
       },
     );
   }
 }
 
-// ── Steps Tab ─────────────────────────────────────────────────────────────────
+// ── Steps Tab ──────────────────────────────────────────────────────────────────
 
 class _StepsTab extends StatelessWidget {
   const _StepsTab();
@@ -164,26 +258,79 @@ class _StepsTab extends StatelessWidget {
     final ctrl = TextEditingController();
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Log Steps'),
-        content: TextField(
-          controller: ctrl,
-          keyboardType: TextInputType.number,
-          decoration: const InputDecoration(labelText: 'Number of steps'),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-          ElevatedButton(
-            onPressed: () {
-              final steps = int.tryParse(ctrl.text) ?? 0;
-              if (steps > 0) {
-                context.read<StepCubit>().addSteps(steps);
-              }
-              Navigator.pop(ctx);
-            },
-            child: const Text('Add'),
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: GlassCard(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Icon(Icons.directions_walk_rounded,
+                  color: AppColors.stepsColor, size: 36),
+              const SizedBox(height: 8),
+              const Text(
+                'Log Steps',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimaryDark,
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: ctrl,
+                keyboardType: TextInputType.number,
+                autofocus: true,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 28,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.stepsColor,
+                ),
+                decoration: InputDecoration(
+                  hintText: '0',
+                  hintStyle: TextStyle(
+                    color: AppColors.stepsColor.withOpacity(0.3),
+                    fontFamily: 'Inter',
+                    fontSize: 28,
+                    fontWeight: FontWeight.w800,
+                  ),
+                  border: InputBorder.none,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  Expanded(
+                    child: GlassButton.outlined(
+                      label: 'Cancel',
+                      onPressed: () => Navigator.pop(ctx),
+                      height: 44,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: GlassButton(
+                      label: 'Log',
+                      gradient: AppColors.stepsGradient,
+                      glowColor: AppColors.stepsColor.withOpacity(0.4),
+                      height: 44,
+                      onPressed: () {
+                        final steps = int.tryParse(ctrl.text) ?? 0;
+                        if (steps > 0) context.read<StepCubit>().addSteps(steps);
+                        Navigator.pop(ctx);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -192,52 +339,31 @@ class _StepsTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<hc.StepCubit, hc.StepState>(
       builder: (context, state) {
-        if (state.isLoading) return const Center(child: CircularProgressIndicator());
-
-        return Column(
-          children: [
-            const SizedBox(height: 32),
-            Stack(
-              alignment: Alignment.center,
-              children: [
-                SizedBox(
-                  height: 200,
-                  width: 200,
-                  child: CircularProgressIndicator(
-                    value: state.progress,
-                    strokeWidth: 16,
-                    backgroundColor: AppColors.progressTrackLight,
-                    color: AppColors.stepsColor,
-                  ),
-                ),
-                Column(
-                  children: [
-                    const Icon(Icons.directions_walk, color: AppColors.stepsColor, size: 40),
-                    const SizedBox(height: 8),
-                    Text(state.totalSteps.formatted, style: context.textTheme.displayMedium),
-                    Text('/ ${state.goalSteps.formatted} steps', style: context.textTheme.bodyMedium),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 32),
-            ElevatedButton.icon(
-              onPressed: () => _showAddStepsDialog(context),
-              icon: const Icon(Icons.add),
-              label: const Text('Manual Entry'),
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.stepsColor),
-            ),
-            const Spacer(),
-            Text('Auto-sync with Apple Health / Google Fit coming soon.', style: context.textTheme.labelSmall),
-            const SizedBox(height: 32),
-          ],
+        if (state.isLoading) return const Center(child: AnimatedLoader(color: AppColors.stepsColor));
+        return _TrackerTabLayout(
+          ring: MetricRing(
+            progress: state.progress,
+            value: state.totalSteps.formatted,
+            unit: 'steps',
+            icon: Icons.directions_walk_rounded,
+            gradient: AppColors.stepsGradient,
+          ),
+          actionButton: GlassButton(
+            label: 'Log Steps',
+            icon: Icons.add_rounded,
+            gradient: AppColors.stepsGradient,
+            glowColor: AppColors.stepsColor.withOpacity(0.4),
+            onPressed: () => _showAddStepsDialog(context),
+            width: 200,
+          ),
+          goalText: 'Goal: ${state.goalSteps.formatted} steps',
         );
       },
     );
   }
 }
 
-// ── Calories Tab ──────────────────────────────────────────────────────────────
+// ── Calories Tab ───────────────────────────────────────────────────────────────
 
 class _CaloriesTab extends StatelessWidget {
   const _CaloriesTab();
@@ -247,111 +373,251 @@ class _CaloriesTab extends StatelessWidget {
     final calCtrl = TextEditingController();
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Add Meal'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: nameCtrl,
-              decoration: const InputDecoration(labelText: 'Meal Name (e.g., Avocado Toast)'),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: calCtrl,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: 'Calories (kcal)'),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-          ElevatedButton(
-            onPressed: () {
-              final cals = int.tryParse(calCtrl.text) ?? 0;
-              final name = nameCtrl.text.trim();
-              if (cals > 0 && name.isNotEmpty) {
-                context.read<CalorieCubit>().addMeal(name: name, calories: cals);
-              }
-              Navigator.pop(ctx);
-            },
-            child: const Text('Add'),
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: GlassCard(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Icon(Icons.restaurant_rounded,
+                  color: AppColors.caloriesColor, size: 36),
+              const SizedBox(height: 8),
+              const Text(
+                'Log Meal',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimaryDark,
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: nameCtrl,
+                style: const TextStyle(fontFamily: 'Inter', color: AppColors.textPrimaryDark),
+                decoration: InputDecoration(
+                  hintText: 'Meal name (e.g. Avocado Toast)',
+                  hintStyle: TextStyle(color: AppColors.textSecondaryDark, fontFamily: 'Inter', fontSize: 13),
+                  filled: true,
+                  fillColor: AppColors.glassWhite,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: AppColors.glassBorder),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: AppColors.glassBorder),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: calCtrl,
+                keyboardType: TextInputType.number,
+                style: const TextStyle(fontFamily: 'Inter', color: AppColors.caloriesColor, fontSize: 18, fontWeight: FontWeight.w700),
+                decoration: InputDecoration(
+                  hintText: 'Calories (kcal)',
+                  hintStyle: TextStyle(color: AppColors.caloriesColor.withOpacity(0.4), fontFamily: 'Inter', fontSize: 13),
+                  filled: true,
+                  fillColor: AppColors.caloriesColor.withOpacity(0.08),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: AppColors.glassBorder),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: AppColors.caloriesColor.withOpacity(0.3)),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  Expanded(
+                    child: GlassButton.outlined(
+                      label: 'Cancel',
+                      onPressed: () => Navigator.pop(ctx),
+                      height: 44,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: GlassButton(
+                      label: 'Add',
+                      gradient: AppColors.caloriesGradient,
+                      glowColor: AppColors.caloriesColor.withOpacity(0.4),
+                      height: 44,
+                      onPressed: () {
+                        final cals = int.tryParse(calCtrl.text) ?? 0;
+                        final name = nameCtrl.text.trim();
+                        if (cals > 0 && name.isNotEmpty) {
+                          context.read<CalorieCubit>().addMeal(name: name, calories: cals);
+                        }
+                        Navigator.pop(ctx);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return BlocBuilder<CalorieCubit, CalorieState>(
       builder: (context, state) {
-        if (state.isLoading) return const Center(child: CircularProgressIndicator());
+        if (state.isLoading) return const Center(child: AnimatedLoader(color: AppColors.caloriesColor));
 
-        return Column(
-          children: [
-            const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Column(
+        return CustomScrollView(
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
+                child: Column(
                   children: [
-                    Text('Consumed', style: context.textTheme.labelMedium),
-                    Text('${state.totalCalories}', style: context.textTheme.displaySmall?.copyWith(color: AppColors.caloriesColor)),
+                    // Summary Ring
+                    MetricRing(
+                      progress: state.progress,
+                      value: '${state.totalCalories}',
+                      unit: 'kcal',
+                      icon: Icons.local_fire_department_rounded,
+                      gradient: AppColors.caloriesGradient,
+                      size: 175,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Goal: ${state.goalCalories} kcal',
+                      style: const TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 12,
+                        color: AppColors.textSecondaryDark,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    GlassButton(
+                      label: 'Log Meal',
+                      icon: Icons.add_rounded,
+                      gradient: AppColors.caloriesGradient,
+                      glowColor: AppColors.caloriesColor.withOpacity(0.4),
+                      onPressed: () => _showAddMealDialog(context),
+                      width: 200,
+                    ),
+                    const SizedBox(height: 24),
+                    if (state.entries.isNotEmpty)
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "TODAY'S MEALS",
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 10,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 1.2,
+                            color: isDark
+                                ? AppColors.textSecondaryDark
+                                : AppColors.textSecondaryLight,
+                          ),
+                        ),
+                      ),
                   ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Container(width: 1, height: 40, color: Colors.grey),
-                ),
-                Column(
-                  children: [
-                    Text('Goal', style: context.textTheme.labelMedium),
-                    Text('${state.goalCalories}', style: context.textTheme.displaySmall?.copyWith(color: Colors.grey)),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
-              child: LinearProgressIndicator(
-                value: state.progress,
-                minHeight: 12,
-                borderRadius: BorderRadius.circular(6),
-                color: AppColors.caloriesColor,
-                backgroundColor: AppColors.progressTrackLight,
               ),
             ),
-            const SizedBox(height: 24),
-            ElevatedButton.icon(
-              onPressed: () => _showAddMealDialog(context),
-              icon: const Icon(Icons.add),
-              label: const Text('Log Meal'),
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.caloriesColor),
-            ),
-            const SizedBox(height: 24),
-            const Divider(),
-            Expanded(
-              child: state.entries.isEmpty
-                  ? Center(child: Text('No meals logged today.', style: context.textTheme.bodyMedium))
-                  : ListView.builder(
-                      itemCount: state.entries.length,
-                      itemBuilder: (context, index) {
-                        final entry = state.entries[index];
-                        return ListTile(
-                          leading: const CircleAvatar(
-                            backgroundColor: AppColors.inputFillLight,
-                            child: Icon(Icons.fastfood, color: AppColors.caloriesColor),
-                          ),
-                          title: Text(entry.mealName),
-                          subtitle: Text(AppDateUtils.displayTime(entry.timestamp)),
-                          trailing: Text('${entry.calories} kcal', style: context.textTheme.labelLarge),
-                          onLongPress: () => context.read<CalorieCubit>().deleteEntry(entry.id),
-                        );
-                      },
+            if (state.entries.isEmpty)
+              const SliverToBoxAdapter(
+                child: Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 24),
+                    child: Text(
+                      'No meals logged today',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        color: AppColors.textSecondaryDark,
+                      ),
                     ),
-            ),
+                  ),
+                ),
+              )
+            else
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
+                sliver: SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final entry = state.entries[index];
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: GlassCard(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  gradient: AppColors.caloriesGradient,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: const Icon(Icons.fastfood_rounded,
+                                    color: Colors.white, size: 16),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(entry.mealName,
+                                        style: const TextStyle(
+                                          fontFamily: 'Inter',
+                                          fontWeight: FontWeight.w600,
+                                          color: AppColors.textPrimaryDark,
+                                        )),
+                                    Text(
+                                      AppDateUtils.displayTime(entry.timestamp),
+                                      style: const TextStyle(
+                                        fontFamily: 'Inter',
+                                        fontSize: 11,
+                                        color: AppColors.textSecondaryDark,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Text(
+                                '${entry.calories} kcal',
+                                style: const TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.caloriesColor,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              GestureDetector(
+                                onTap: () =>
+                                    context.read<CalorieCubit>().deleteEntry(entry.id),
+                                child: const Icon(Icons.close_rounded,
+                                    size: 16, color: AppColors.textSecondaryDark),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                    childCount: state.entries.length,
+                  ),
+                ),
+              ),
           ],
         );
       },
@@ -359,7 +625,7 @@ class _CaloriesTab extends StatelessWidget {
   }
 }
 
-// ── Sleep Tab ─────────────────────────────────────────────────────────────────
+// ── Sleep Tab ──────────────────────────────────────────────────────────────────
 
 class _SleepTab extends StatefulWidget {
   const _SleepTab();
@@ -372,7 +638,7 @@ class _SleepTabState extends State<_SleepTab> {
   TimeOfDay _wakeTime = const TimeOfDay(hour: 6, minute: 30);
 
   Future<void> _selectTime(BuildContext context, bool isBedTime) async {
-    final TimeOfDay? picked = await showTimePicker(
+    final picked = await showTimePicker(
       context: context,
       initialTime: isBedTime ? _bedTime : _wakeTime,
     );
@@ -386,14 +652,9 @@ class _SleepTabState extends State<_SleepTab> {
 
   void _logSleep() {
     final now = DateTime.now();
-    // Reconstruct start time (yesterday if PM, today if AM — simplistic logic)
     var start = DateTime(now.year, now.month, now.day, _bedTime.hour, _bedTime.minute);
-    if (_bedTime.hour > 12) {
-      start = start.subtract(const Duration(days: 1));
-    }
-    
-    var end = DateTime(now.year, now.month, now.day, _wakeTime.hour, _wakeTime.minute);
-    
+    if (_bedTime.hour > 12) start = start.subtract(const Duration(days: 1));
+    final end = DateTime(now.year, now.month, now.day, _wakeTime.hour, _wakeTime.minute);
     context.read<SleepCubit>().logSleep(sleepStart: start, sleepEnd: end);
   }
 
@@ -401,89 +662,187 @@ class _SleepTabState extends State<_SleepTab> {
   Widget build(BuildContext context) {
     return BlocBuilder<SleepCubit, SleepState>(
       builder: (context, state) {
-        if (state.isLoading) return const Center(child: CircularProgressIndicator());
+        if (state.isLoading) return const Center(child: AnimatedLoader(color: AppColors.sleepColor));
 
-        return Column(
-          children: [
-            const SizedBox(height: 32),
-            Icon(Icons.bedtime, size: 80, color: AppColors.sleepColor),
-            const SizedBox(height: 16),
-            if (state.todaySleep != null) ...[
+        final durationH = state.todaySleep?.durationHours ?? 0.0;
+        final goalH = 8.0;
+        final progress = (durationH / goalH).clamp(0.0, 1.0);
+
+        return SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.fromLTRB(20, 28, 20, 100),
+          child: Column(
+            children: [
+              MetricRing(
+                progress: progress,
+                value: state.todaySleep != null
+                    ? durationH.toStringAsFixed(1)
+                    : '0',
+                unit: 'hours',
+                icon: Icons.bedtime_rounded,
+                gradient: AppColors.sleepGradient,
+                size: 175,
+              ),
+              const SizedBox(height: 8),
               Text(
-                '${state.todaySleep!.durationHours.toStringAsFixed(1)} hours',
-                style: context.textTheme.displayLarge?.copyWith(color: AppColors.sleepColor),
+                state.todaySleep != null ? 'Logged today' : 'No sleep logged yet',
+                style: const TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 13,
+                  color: AppColors.textSecondaryDark,
+                ),
               ),
-              Text('logged today', style: context.textTheme.bodyMedium),
-            ] else ...[
-              Text('No sleep logged yet', style: context.textTheme.titleLarge),
+              const SizedBox(height: 28),
+
+              // Time pickers
+              GlassCard(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('SET SLEEP SCHEDULE',
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1.2,
+                          color: AppColors.textSecondaryDark,
+                        )),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _TimePickerTile(
+                            title: 'Bedtime',
+                            time: _bedTime,
+                            icon: CupertinoIcons.moon_fill,
+                            color: AppColors.sleepColor,
+                            onTap: () => _selectTime(context, true),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          child: Icon(Icons.arrow_forward_rounded,
+                              size: 16, color: AppColors.textSecondaryDark),
+                        ),
+                        Expanded(
+                          child: _TimePickerTile(
+                            title: 'Wake up',
+                            time: _wakeTime,
+                            icon: CupertinoIcons.sun_max_fill,
+                            color: AppColors.accent,
+                            onTap: () => _selectTime(context, false),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    GlassButton(
+                      label: 'Save Sleep Log',
+                      gradient: AppColors.sleepGradient,
+                      glowColor: AppColors.sleepColor.withOpacity(0.4),
+                      onPressed: _logSleep,
+                    ),
+                  ],
+                ),
+              ),
             ],
-            const SizedBox(height: 48),
-            
-            // Time Pickers
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _TimePickerCard(
-                    title: 'Bedtime',
-                    time: _bedTime,
-                    icon: CupertinoIcons.moon_fill,
-                    onTap: () => _selectTime(context, true),
-                  ),
-                  const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
-                  _TimePickerCard(
-                    title: 'Wake up',
-                    time: _wakeTime,
-                    icon: CupertinoIcons.sun_max_fill,
-                    onTap: () => _selectTime(context, false),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 32),
-            ElevatedButton(
-              onPressed: _logSleep,
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.sleepColor),
-              child: const Text('Set Sleep Log'),
-            ),
-          ],
+          ),
         );
       },
     );
   }
 }
 
-class _TimePickerCard extends StatelessWidget {
+class _TimePickerTile extends StatelessWidget {
   final String title;
   final TimeOfDay time;
   final IconData icon;
+  final Color color;
   final VoidCallback onTap;
 
-  const _TimePickerCard({required this.title, required this.time, required this.icon, required this.onTap});
+  const _TimePickerTile({
+    required this.title,
+    required this.time,
+    required this.icon,
+    required this.color,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: context.theme.cardColor,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
+          color: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: color.withOpacity(0.3)),
         ),
         child: Column(
           children: [
-            Row(
-              children: [
-                Icon(icon, size: 16, color: AppColors.sleepColor),
-                const SizedBox(width: 8),
-                Text(title, style: context.textTheme.labelMedium),
-              ],
+            Icon(icon, color: color, size: 20),
+            const SizedBox(height: 6),
+            Text(
+              title,
+              style: const TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 11,
+                color: AppColors.textSecondaryDark,
+              ),
             ),
-            const SizedBox(height: 8),
-            Text(time.format(context), style: context.textTheme.titleLarge),
+            const SizedBox(height: 4),
+            Text(
+              time.format(context),
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                color: color,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ── Shared Layout ──────────────────────────────────────────────────────────────
+
+class _TrackerTabLayout extends StatelessWidget {
+  final Widget ring;
+  final Widget actionButton;
+  final String goalText;
+
+  const _TrackerTabLayout({
+    required this.ring,
+    required this.actionButton,
+    required this.goalText,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ring,
+            const SizedBox(height: 12),
+            Text(
+              goalText,
+              style: const TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 12,
+                color: AppColors.textSecondaryDark,
+              ),
+            ),
+            const SizedBox(height: 28),
+            actionButton,
           ],
         ),
       ),

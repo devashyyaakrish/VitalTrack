@@ -3,7 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/constants/app_strings.dart';
 import '../../core/utils/validators.dart';
-import '../../core/utils/extensions.dart';
+import '../../core/theme/app_colors.dart';
+import '../../core/components/gradient_scaffold.dart';
+import '../../core/components/glass_card.dart';
+import '../../core/components/glass_button.dart';
+import '../../core/components/glass_input_field.dart';
 import 'bloc/auth_bloc.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -42,15 +46,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(AppStrings.signUp),
-      ),
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return GradientScaffold(
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthErrorState) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message), backgroundColor: context.theme.colorScheme.error),
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: AppColors.error,
+              ),
             );
           }
         },
@@ -59,92 +65,154 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
           return SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24.0),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
               child: Form(
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const SizedBox(height: 16),
-                    // Name Field
-                    TextFormField(
-                      controller: _nameCtrl,
-                      keyboardType: TextInputType.name,
-                      decoration: const InputDecoration(
-                        labelText: AppStrings.nameLabel,
-                        prefixIcon: Icon(Icons.person_outline),
-                      ),
-                      validator: Validators.validateName,
-                      textInputAction: TextInputAction.next,
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Email Field
-                    TextFormField(
-                      controller: _emailCtrl,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: const InputDecoration(
-                        labelText: AppStrings.emailLabel,
-                        prefixIcon: Icon(Icons.email_outlined),
-                      ),
-                      validator: Validators.validateEmail,
-                      textInputAction: TextInputAction.next,
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Password Field
-                    TextFormField(
-                      controller: _passwordCtrl,
-                      obscureText: _obscurePassword,
-                      decoration: InputDecoration(
-                        labelText: AppStrings.passwordLabel,
-                        prefixIcon: const Icon(Icons.lock_outline),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                    // ── Header ──────────────────────────────────────────
+                    Row(
+                      children: [
+                        GestureDetector(
+                          onTap: () => context.pop(),
+                          child: Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: AppColors.glassWhite,
+                              shape: BoxShape.circle,
+                              border: Border.all(color: AppColors.glassBorder),
+                            ),
+                            child: const Icon(Icons.arrow_back_ios_new_rounded,
+                                size: 16, color: Colors.white),
                           ),
-                          onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                        ),
+                        const SizedBox(width: 16),
+                        ShaderMask(
+                          shaderCallback: (bounds) =>
+                              AppColors.primaryGradient.createShader(bounds),
+                          child: const Text(
+                            'Create Account',
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 26,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: -0.8,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 52),
+                      child: Text(
+                        'Join VitalTrack and start your health journey',
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 13,
+                          color: isDark
+                              ? AppColors.textSecondaryDark
+                              : AppColors.textSecondaryLight,
                         ),
                       ),
-                      validator: Validators.validatePassword,
-                      textInputAction: TextInputAction.next,
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 32),
 
-                    // Confirm Password Field
-                    TextFormField(
-                      controller: _confirmPasswordCtrl,
-                      obscureText: _obscurePassword,
-                      decoration: const InputDecoration(
-                        labelText: AppStrings.confirmPasswordLabel,
-                        prefixIcon: Icon(Icons.lock_reset),
+                    // ── Glass Form Card ──────────────────────────────────
+                    GlassCard(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          GlassInputField(
+                            controller: _nameCtrl,
+                            hintText: AppStrings.nameLabel,
+                            prefixIcon: Icons.person_outline_rounded,
+                            keyboardType: TextInputType.name,
+                            textInputAction: TextInputAction.next,
+                            validator: Validators.validateName,
+                          ),
+                          const SizedBox(height: 14),
+
+                          GlassInputField(
+                            controller: _emailCtrl,
+                            hintText: AppStrings.emailLabel,
+                            prefixIcon: Icons.email_outlined,
+                            keyboardType: TextInputType.emailAddress,
+                            textInputAction: TextInputAction.next,
+                            validator: Validators.validateEmail,
+                          ),
+                          const SizedBox(height: 14),
+
+                          GlassInputField(
+                            controller: _passwordCtrl,
+                            hintText: AppStrings.passwordLabel,
+                            prefixIcon: Icons.lock_outline_rounded,
+                            obscureText: _obscurePassword,
+                            textInputAction: TextInputAction.next,
+                            validator: Validators.validatePassword,
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscurePassword
+                                    ? Icons.visibility_off_outlined
+                                    : Icons.visibility_outlined,
+                                color: AppColors.textSecondaryDark,
+                                size: 20,
+                              ),
+                              onPressed: () => setState(
+                                  () => _obscurePassword = !_obscurePassword),
+                            ),
+                          ),
+                          const SizedBox(height: 14),
+
+                          GlassInputField(
+                            controller: _confirmPasswordCtrl,
+                            hintText: AppStrings.confirmPasswordLabel,
+                            prefixIcon: Icons.lock_reset_rounded,
+                            obscureText: _obscurePassword,
+                            textInputAction: TextInputAction.done,
+                            validator: (val) => Validators.validateConfirmPassword(
+                                val, _passwordCtrl.text),
+                            onSubmitted: (_) => _submit(),
+                          ),
+                          const SizedBox(height: 28),
+
+                          GlassButton(
+                            label: AppStrings.signUp,
+                            onPressed: isLoading ? null : _submit,
+                            isLoading: isLoading,
+                          ),
+                        ],
                       ),
-                      validator: (val) => Validators.validateConfirmPassword(val, _passwordCtrl.text),
-                      onFieldSubmitted: (_) => _submit(),
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 28),
 
-                    // Register Button
-                    ElevatedButton(
-                      onPressed: isLoading ? null : _submit,
-                      child: isLoading
-                          ? const SizedBox(
-                              height: 24,
-                              width: 24,
-                              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                            )
-                          : const Text(AppStrings.signUp),
-                    ),
-                    const SizedBox(height: 32),
-
-                    // Login Link
+                    // ── Login Link ───────────────────────────────────────
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(AppStrings.hasAccount, style: context.textTheme.bodyMedium),
+                        Text(
+                          AppStrings.hasAccount,
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 14,
+                            color: isDark
+                                ? AppColors.textSecondaryDark
+                                : AppColors.textSecondaryLight,
+                          ),
+                        ),
                         TextButton(
                           onPressed: () => context.pop(),
-                          child: const Text(AppStrings.signIn),
+                          child: const Text(
+                            AppStrings.signIn,
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.primary,
+                            ),
+                          ),
                         ),
                       ],
                     ),

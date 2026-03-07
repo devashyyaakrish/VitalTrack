@@ -23,7 +23,7 @@ extension StringExtensions on String {
 
 extension DoubleExtensions on double {
   /// Clamps value between 0.0 and 1.0 (for progress)
-  double get asProgress => clamp(0.0, 1.0);
+  double get asProgress => clamp(0.0, 1.0).toDouble();
 
   /// Formats double with max 1 decimal place
   String get compact {
