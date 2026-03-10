@@ -89,9 +89,9 @@ class VitalTrackApp extends StatelessWidget {
 
           return MaterialApp.router(
             title: AppStrings.appName,
-            theme: AppTheme.lightTheme,
+            theme: AppTheme.darkTheme,
             darkTheme: AppTheme.darkTheme,
-            themeMode: settingsState.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+            themeMode: ThemeMode.dark,
             routerConfig: router,
             debugShowCheckedModeBanner: false,
           );

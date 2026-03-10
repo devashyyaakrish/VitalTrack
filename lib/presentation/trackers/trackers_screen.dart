@@ -64,6 +64,7 @@ class _TrackersScreenState extends State<TrackersScreen>
             child: TabBar(
               controller: _tabController,
               isScrollable: false,
+              indicatorSize: TabBarIndicatorSize.tab,
               labelPadding: EdgeInsets.zero,
               labelColor: Colors.white,
               unselectedLabelColor: AppColors.textSecondaryDark,

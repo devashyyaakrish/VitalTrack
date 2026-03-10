@@ -63,11 +63,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       gradient: AppColors.heroGradient,
                     ),
                     child: SafeArea(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+                        child: Padding(
+                          padding: EdgeInsets.fromLTRB(20, 56.0 + 10, 20, 20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
                             BlocBuilder<AuthBloc, AuthState>(
                               builder: (context, authState) {
                                 final userName =
@@ -99,7 +100,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 );
                               },
                             ),
-                            const Spacer(),
+                            const SizedBox(height: 16),
                             // Quote row
                             Row(
                               children: [
