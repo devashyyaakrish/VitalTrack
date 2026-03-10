@@ -47,7 +47,6 @@ class GlassButton extends StatefulWidget {
 class _GlassButtonState extends State<GlassButton>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late Animation<double> _scale;
 
   @override
   void initState() {
@@ -59,7 +58,6 @@ class _GlassButtonState extends State<GlassButton>
       upperBound: 1.0,
       value: 1.0,
     );
-    _scale = _controller;
   }
 
   @override
@@ -86,7 +84,7 @@ class _GlassButtonState extends State<GlassButton>
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final effectiveGradient = widget.gradient ?? AppColors.primaryGradient;
-    final effectiveGlow = widget.glowColor ?? AppColors.primary.withOpacity(0.4);
+    final effectiveGlow = widget.glowColor ?? AppColors.primary.withValues(alpha: 0.4);
     final isDisabled = widget.onPressed == null || widget.isLoading;
 
     return GestureDetector(
@@ -95,9 +93,9 @@ class _GlassButtonState extends State<GlassButton>
       onTapCancel: _onTapCancel,
       onTap: isDisabled ? null : widget.onPressed,
       child: AnimatedBuilder(
-        animation: _scale,
+        animation: _controller,
         builder: (context, child) => Transform.scale(
-          scale: _scale.value,
+          scale: _controller.value,
           child: child,
         ),
         child: Container(
@@ -112,10 +110,10 @@ class _GlassButtonState extends State<GlassButton>
                   ),
                   color: isDark
                       ? AppColors.glassWhite
-                      : Colors.white.withOpacity(0.6),
+                      : Colors.white.withValues(alpha: 0.6),
                   boxShadow: [
                     BoxShadow(
-                      color: effectiveGlow.withOpacity(0.2),
+                      color: effectiveGlow.withValues(alpha: 0.2),
                       blurRadius: 12,
                       spreadRadius: 1,
                     ),

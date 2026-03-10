@@ -76,7 +76,7 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       final googleUser = await _googleSignIn.signIn();
       if (googleUser == null) {
-        return Either.left(const AuthFailure(message: 'Google sign-in was cancelled.'));
+        return const Either.left(AuthFailure(message: 'Google sign-in was cancelled.'));
       }
       final googleAuth = await googleUser.authentication;
       final credential = GoogleAuthProvider.credential(

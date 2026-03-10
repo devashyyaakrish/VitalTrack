@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:provider/provider.dart';
 
 import 'core/theme/app_theme.dart';
 import 'core/router/app_router.dart';
@@ -83,7 +82,6 @@ class VitalTrackApp extends StatelessWidget {
       child: Builder(
         builder: (context) {
           final authBloc = context.read<AuthBloc>();
-          final settingsState = context.watch<SettingsCubit>().state;
           
           final router = AppRouter.createRouter(authBloc);
 

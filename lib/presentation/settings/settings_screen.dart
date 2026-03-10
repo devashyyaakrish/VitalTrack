@@ -55,10 +55,10 @@ class SettingsScreen extends StatelessWidget {
                           width: 58,
                           height: 58,
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
+                            color: Colors.white.withValues(alpha: 0.2),
                             shape: BoxShape.circle,
                             border:
-                                Border.all(color: Colors.white.withOpacity(0.4)),
+                                Border.all(color: Colors.white.withValues(alpha: 0.4)),
                           ),
                           child: Center(
                             child: Text(
@@ -91,7 +91,7 @@ class SettingsScreen extends StatelessWidget {
                                 style: TextStyle(
                                   fontFamily: 'Inter',
                                   fontSize: 13,
-                                  color: Colors.white.withOpacity(0.75),
+                                  color: Colors.white.withValues(alpha: 0.75),
                                 ),
                               ),
                             ],
@@ -105,7 +105,7 @@ class SettingsScreen extends StatelessWidget {
               const SizedBox(height: 24),
 
               // ── Preferences ───────────────────────────────────────────
-              _SectionHeader(label: 'PREFERENCES'),
+              const _SectionHeader(label: 'PREFERENCES'),
               const SizedBox(height: 10),
 
               GlassCard(
@@ -120,7 +120,7 @@ class SettingsScreen extends StatelessWidget {
                       trailing: Switch(
                         value: state.isDarkMode,
                         onChanged: (_) => cubit.toggleDarkMode(),
-                        activeColor: AppColors.primary,
+                        activeThumbColor: AppColors.primary,
                       ),
                     ),
                     _Divider(),
@@ -132,7 +132,7 @@ class SettingsScreen extends StatelessWidget {
                       trailing: Switch(
                         value: state.useMetric,
                         onChanged: (_) => cubit.toggleUnits(),
-                        activeColor: AppColors.primary,
+                        activeThumbColor: AppColors.primary,
                       ),
                     ),
                   ],
@@ -141,7 +141,7 @@ class SettingsScreen extends StatelessWidget {
               const SizedBox(height: 20),
 
               // ── Notifications ─────────────────────────────────────────
-              _SectionHeader(label: 'NOTIFICATIONS'),
+              const _SectionHeader(label: 'NOTIFICATIONS'),
               const SizedBox(height: 10),
 
               GlassCard(
@@ -156,7 +156,7 @@ class SettingsScreen extends StatelessWidget {
                       trailing: Switch(
                         value: state.waterReminders,
                         onChanged: (_) => cubit.toggleWaterReminders(),
-                        activeColor: AppColors.primary,
+                        activeThumbColor: AppColors.primary,
                       ),
                     ),
                     _Divider(),
@@ -167,7 +167,7 @@ class SettingsScreen extends StatelessWidget {
                       trailing: Switch(
                         value: state.habitReminders,
                         onChanged: (_) => cubit.toggleHabitReminders(),
-                        activeColor: AppColors.primary,
+                        activeThumbColor: AppColors.primary,
                       ),
                     ),
                   ],
@@ -176,7 +176,7 @@ class SettingsScreen extends StatelessWidget {
               const SizedBox(height: 20),
 
               // ── Account ───────────────────────────────────────────────
-              _SectionHeader(label: 'ACCOUNT'),
+              const _SectionHeader(label: 'ACCOUNT'),
               const SizedBox(height: 10),
 
               GlassCard(
@@ -197,25 +197,9 @@ class SettingsScreen extends StatelessWidget {
                           confirmLabel: 'Sign Out',
                           confirmColor: AppColors.warning,
                         );
-                        if (confirm == true) cubit.signOut();
-                      },
-                    ),
-                    _Divider(),
-                    _GlassTile(
-                      icon: Icons.delete_forever_rounded,
-                      iconColor: AppColors.error,
-                      title: AppStrings.deleteAccount,
-                      titleColor: AppColors.error,
-                      onTap: () async {
-                        final confirm = await _showConfirmDialog(
-                          context,
-                          title: 'Delete Account?',
-                          message:
-                              'This action is permanent and will delete all your data.',
-                          confirmLabel: 'Delete',
-                          confirmColor: AppColors.error,
-                        );
-                        if (confirm == true) cubit.deleteAccount();
+                        if (confirm == true) {
+                          cubit.signOut();
+                        }
                       },
                     ),
                   ],
@@ -237,58 +221,55 @@ class SettingsScreen extends StatelessWidget {
   }) {
     return showDialog<bool>(
       context: context,
-      builder: (ctx) => Dialog(
+      builder: (context) => Dialog(
         backgroundColor: Colors.transparent,
         child: GlassCard(
           padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.warning_rounded, color: confirmColor, size: 36),
-              const SizedBox(height: 12),
               Text(
                 title,
                 style: const TextStyle(
                   fontFamily: 'Inter',
                   fontSize: 18,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w700,
                   color: AppColors.textPrimaryDark,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
               Text(
                 message,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontFamily: 'Inter',
-                  fontSize: 13,
+                  fontSize: 14,
                   color: AppColors.textSecondaryDark,
-                  height: 1.5,
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
               Row(
                 children: [
                   Expanded(
                     child: GlassButton.outlined(
                       label: 'Cancel',
-                      onPressed: () => Navigator.pop(ctx, false),
-                      height: 44,
+                      onPressed: () => Navigator.pop(context, false),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: GlassButton(
                       label: confirmLabel,
-                      height: 44,
                       gradient: LinearGradient(
                         colors: [
-                          confirmColor.withOpacity(0.8),
                           confirmColor,
+                          confirmColor.withValues(alpha: 0.8),
                         ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
-                      glowColor: confirmColor.withOpacity(0.3),
-                      onPressed: () => Navigator.pop(ctx, true),
+                      glowColor: confirmColor.withValues(alpha: 0.3),
+                      onPressed: () => Navigator.pop(context, true),
                     ),
                   ),
                 ],
@@ -307,16 +288,17 @@ class _SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Text(
-      label,
-      style: TextStyle(
-        fontFamily: 'Inter',
-        fontSize: 10,
-        fontWeight: FontWeight.w700,
-        letterSpacing: 1.4,
-        color:
-            isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+    return Padding(
+      padding: const EdgeInsets.only(left: 8),
+      child: Text(
+        label,
+        style: const TextStyle(
+          fontFamily: 'Inter',
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 1.2,
+          color: AppColors.textSecondaryDark,
+        ),
       ),
     );
   }
@@ -327,8 +309,8 @@ class _GlassTile extends StatelessWidget {
   final Color iconColor;
   final String title;
   final String? subtitle;
-  final Color? titleColor;
   final Widget? trailing;
+  final Color? titleColor;
   final VoidCallback? onTap;
 
   const _GlassTile({
@@ -336,47 +318,57 @@ class _GlassTile extends StatelessWidget {
     required this.iconColor,
     required this.title,
     this.subtitle,
-    this.titleColor,
     this.trailing,
+    this.titleColor,
     this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 4),
+    return InkWell(
       onTap: onTap,
-      leading: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: iconColor.withOpacity(0.15),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Icon(icon, color: iconColor, size: 18),
-      ),
-      title: Text(
-        title,
-        style: TextStyle(
-          fontFamily: 'Inter',
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-          color: titleColor ??
-              (Theme.of(context).brightness == Brightness.dark
-                  ? AppColors.textPrimaryDark
-                  : AppColors.textPrimaryLight),
-        ),
-      ),
-      subtitle: subtitle != null
-          ? Text(
-              subtitle!,
-              style: const TextStyle(
-                fontFamily: 'Inter',
-                fontSize: 11,
-                color: AppColors.textSecondaryDark,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: iconColor.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(10),
               ),
-            )
-          : null,
-      trailing: trailing,
+              child: Icon(icon, color: iconColor, size: 20),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: titleColor ?? AppColors.textPrimaryDark,
+                    ),
+                  ),
+                  if (subtitle != null)
+                    Text(
+                      subtitle!,
+                      style: const TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 12,
+                        color: AppColors.textSecondaryDark,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            if (trailing != null) trailing!,
+          ],
+        ),
+      ),
     );
   }
 }
@@ -384,12 +376,11 @@ class _GlassTile extends StatelessWidget {
 class _Divider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Divider(
+    return const Divider(
       height: 1,
       thickness: 1,
-      color: AppColors.glassBorder,
-      indent: 54,
-      endIndent: 0,
+      indent: 64,
+      color: AppColors.glassWhite,
     );
   }
 }

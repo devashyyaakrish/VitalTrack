@@ -113,7 +113,7 @@ class WaterRepositoryImpl implements WaterRepository {
         final key = AppDateUtils.toDateKey(day);
         final total = _box.values
             .where((e) => e.userId == userId && e.dateKey == key)
-            .fold<int>(0, (sum, e) => sum + e.amountMl);
+            .fold<int>(0, (acc, e) => acc + e.amountMl);
         result[key] = total;
       }
       return Either.right(result);
@@ -168,7 +168,7 @@ class StepRepositoryImpl implements StepRepository {
       final today = AppDateUtils.todayKey;
       final total = _box.values
           .where((e) => e.userId == userId && e.dateKey == today)
-          .fold<int>(0, (sum, e) => sum + e.steps);
+          .fold<int>(0, (acc, e) => acc + e.steps);
       return Either.right(total);
     } catch (e) {
       return Either.left(CacheFailure(message: e.toString()));
@@ -200,7 +200,7 @@ class StepRepositoryImpl implements StepRepository {
         final key = AppDateUtils.toDateKey(day);
         final total = _box.values
             .where((e) => e.userId == userId && e.dateKey == key)
-            .fold<int>(0, (sum, e) => sum + e.steps);
+            .fold<int>(0, (acc, e) => acc + e.steps);
         result[key] = total;
       }
       return Either.right(result);
@@ -296,7 +296,7 @@ class CalorieRepositoryImpl implements CalorieRepository {
         final key = AppDateUtils.toDateKey(day);
         final total = _box.values
             .where((e) => e.userId == userId && e.dateKey == key)
-            .fold<int>(0, (sum, e) => sum + e.calories);
+            .fold<int>(0, (acc, e) => acc + e.calories);
         result[key] = total;
       }
       return Either.right(result);

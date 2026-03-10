@@ -148,9 +148,9 @@ class _WaterTab extends StatelessWidget {
                 SliderTheme(
                   data: SliderThemeData(
                     activeTrackColor: AppColors.waterColor,
-                    inactiveTrackColor: AppColors.waterColor.withOpacity(0.2),
+                    inactiveTrackColor: AppColors.waterColor.withValues(alpha: 0.2),
                     thumbColor: AppColors.waterColor,
-                    overlayColor: AppColors.waterColor.withOpacity(0.2),
+                    overlayColor: AppColors.waterColor.withValues(alpha: 0.2),
                   ),
                   child: Slider(
                     value: amount.toDouble(),
@@ -170,7 +170,7 @@ class _WaterTab extends StatelessWidget {
                       child: Chip(
                         label: Text('$ml ml'),
                         backgroundColor: amount == ml
-                            ? AppColors.waterColor.withOpacity(0.3)
+                            ? AppColors.waterColor.withValues(alpha: 0.3)
                             : AppColors.glassWhite,
                         labelStyle: TextStyle(
                           fontFamily: 'Inter',
@@ -209,7 +209,7 @@ class _WaterTab extends StatelessWidget {
                         },
                         height: 44,
                         gradient: AppColors.waterGradient,
-                        glowColor: AppColors.waterColor.withOpacity(0.4),
+                        glowColor: AppColors.waterColor.withValues(alpha: 0.4),
                       ),
                     ),
                   ],
@@ -226,7 +226,9 @@ class _WaterTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<WaterCubit, WaterState>(
       builder: (context, state) {
-        if (state.isLoading) return const Center(child: AnimatedLoader(color: AppColors.waterColor));
+        if (state.isLoading) {
+          return const Center(child: AnimatedLoader(color: AppColors.waterColor));
+        }
         return _TrackerTabLayout(
           ring: MetricRing(
             progress: state.progress,
@@ -239,7 +241,7 @@ class _WaterTab extends StatelessWidget {
             label: 'Add Water',
             icon: Icons.add_rounded,
             gradient: AppColors.waterGradient,
-            glowColor: AppColors.waterColor.withOpacity(0.4),
+            glowColor: AppColors.waterColor.withValues(alpha: 0.4),
             onPressed: () => _showAddWaterDialog(context),
             width: 200,
           ),
@@ -295,7 +297,7 @@ class _StepsTab extends StatelessWidget {
                 decoration: InputDecoration(
                   hintText: '0',
                   hintStyle: TextStyle(
-                    color: AppColors.stepsColor.withOpacity(0.3),
+                    color: AppColors.stepsColor.withValues(alpha: 0.3),
                     fontFamily: 'Inter',
                     fontSize: 28,
                     fontWeight: FontWeight.w800,
@@ -318,11 +320,13 @@ class _StepsTab extends StatelessWidget {
                     child: GlassButton(
                       label: 'Log',
                       gradient: AppColors.stepsGradient,
-                      glowColor: AppColors.stepsColor.withOpacity(0.4),
+                      glowColor: AppColors.stepsColor.withValues(alpha: 0.4),
                       height: 44,
                       onPressed: () {
                         final steps = int.tryParse(ctrl.text) ?? 0;
-                        if (steps > 0) context.read<StepCubit>().addSteps(steps);
+                        if (steps > 0) {
+                          context.read<StepCubit>().addSteps(steps);
+                        }
                         Navigator.pop(ctx);
                       },
                     ),
@@ -340,7 +344,9 @@ class _StepsTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<hc.StepCubit, hc.StepState>(
       builder: (context, state) {
-        if (state.isLoading) return const Center(child: AnimatedLoader(color: AppColors.stepsColor));
+        if (state.isLoading) {
+          return const Center(child: AnimatedLoader(color: AppColors.stepsColor));
+        }
         return _TrackerTabLayout(
           ring: MetricRing(
             progress: state.progress,
@@ -353,7 +359,7 @@ class _StepsTab extends StatelessWidget {
             label: 'Log Steps',
             icon: Icons.add_rounded,
             gradient: AppColors.stepsGradient,
-            glowColor: AppColors.stepsColor.withOpacity(0.4),
+            glowColor: AppColors.stepsColor.withValues(alpha: 0.4),
             onPressed: () => _showAddStepsDialog(context),
             width: 200,
           ),
@@ -401,7 +407,7 @@ class _CaloriesTab extends StatelessWidget {
                 style: const TextStyle(fontFamily: 'Inter', color: AppColors.textPrimaryDark),
                 decoration: InputDecoration(
                   hintText: 'Meal name (e.g. Avocado Toast)',
-                  hintStyle: TextStyle(color: AppColors.textSecondaryDark, fontFamily: 'Inter', fontSize: 13),
+                  hintStyle: const TextStyle(color: AppColors.textSecondaryDark, fontFamily: 'Inter', fontSize: 13),
                   filled: true,
                   fillColor: AppColors.glassWhite,
                   border: OutlineInputBorder(
@@ -422,16 +428,16 @@ class _CaloriesTab extends StatelessWidget {
                 style: const TextStyle(fontFamily: 'Inter', color: AppColors.caloriesColor, fontSize: 18, fontWeight: FontWeight.w700),
                 decoration: InputDecoration(
                   hintText: 'Calories (kcal)',
-                  hintStyle: TextStyle(color: AppColors.caloriesColor.withOpacity(0.4), fontFamily: 'Inter', fontSize: 13),
+                  hintStyle: TextStyle(color: AppColors.caloriesColor.withValues(alpha: 0.4), fontFamily: 'Inter', fontSize: 13),
                   filled: true,
-                  fillColor: AppColors.caloriesColor.withOpacity(0.08),
+                  fillColor: AppColors.caloriesColor.withValues(alpha: 0.08),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: const BorderSide(color: AppColors.glassBorder),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: AppColors.caloriesColor.withOpacity(0.3)),
+                    borderSide: BorderSide(color: AppColors.caloriesColor.withValues(alpha: 0.3)),
                   ),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
                 ),
@@ -451,7 +457,7 @@ class _CaloriesTab extends StatelessWidget {
                     child: GlassButton(
                       label: 'Add',
                       gradient: AppColors.caloriesGradient,
-                      glowColor: AppColors.caloriesColor.withOpacity(0.4),
+                      glowColor: AppColors.caloriesColor.withValues(alpha: 0.4),
                       height: 44,
                       onPressed: () {
                         final cals = int.tryParse(calCtrl.text) ?? 0;
@@ -478,7 +484,9 @@ class _CaloriesTab extends StatelessWidget {
 
     return BlocBuilder<CalorieCubit, CalorieState>(
       builder: (context, state) {
-        if (state.isLoading) return const Center(child: AnimatedLoader(color: AppColors.caloriesColor));
+        if (state.isLoading) {
+          return const Center(child: AnimatedLoader(color: AppColors.caloriesColor));
+        }
 
         return CustomScrollView(
           physics: const BouncingScrollPhysics(),
@@ -511,7 +519,7 @@ class _CaloriesTab extends StatelessWidget {
                       label: 'Log Meal',
                       icon: Icons.add_rounded,
                       gradient: AppColors.caloriesGradient,
-                      glowColor: AppColors.caloriesColor.withOpacity(0.4),
+                      glowColor: AppColors.caloriesColor.withValues(alpha: 0.4),
                       onPressed: () => _showAddMealDialog(context),
                       width: 200,
                     ),
@@ -645,8 +653,11 @@ class _SleepTabState extends State<_SleepTab> {
     );
     if (picked != null) {
       setState(() {
-        if (isBedTime) _bedTime = picked;
-        else _wakeTime = picked;
+        if (isBedTime) {
+          _bedTime = picked;
+        } else {
+          _wakeTime = picked;
+        }
       });
     }
   }
@@ -654,7 +665,9 @@ class _SleepTabState extends State<_SleepTab> {
   void _logSleep() {
     final now = DateTime.now();
     var start = DateTime(now.year, now.month, now.day, _bedTime.hour, _bedTime.minute);
-    if (_bedTime.hour > 12) start = start.subtract(const Duration(days: 1));
+    if (_bedTime.hour > 12) {
+      start = start.subtract(const Duration(days: 1));
+    }
     final end = DateTime(now.year, now.month, now.day, _wakeTime.hour, _wakeTime.minute);
     context.read<SleepCubit>().logSleep(sleepStart: start, sleepEnd: end);
   }
@@ -663,10 +676,12 @@ class _SleepTabState extends State<_SleepTab> {
   Widget build(BuildContext context) {
     return BlocBuilder<SleepCubit, SleepState>(
       builder: (context, state) {
-        if (state.isLoading) return const Center(child: AnimatedLoader(color: AppColors.sleepColor));
+        if (state.isLoading) {
+          return const Center(child: AnimatedLoader(color: AppColors.sleepColor));
+        }
 
         final durationH = state.todaySleep?.durationHours ?? 0.0;
-        final goalH = 8.0;
+        const goalH = 8.0;
         final progress = (durationH / goalH).clamp(0.0, 1.0);
 
         return SingleChildScrollView(
@@ -721,8 +736,8 @@ class _SleepTabState extends State<_SleepTab> {
                             onTap: () => _selectTime(context, true),
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 12),
                           child: Icon(Icons.arrow_forward_rounded,
                               size: 16, color: AppColors.textSecondaryDark),
                         ),
@@ -741,7 +756,7 @@ class _SleepTabState extends State<_SleepTab> {
                     GlassButton(
                       label: 'Save Sleep Log',
                       gradient: AppColors.sleepGradient,
-                      glowColor: AppColors.sleepColor.withOpacity(0.4),
+                      glowColor: AppColors.sleepColor.withValues(alpha: 0.4),
                       onPressed: _logSleep,
                     ),
                   ],
@@ -777,9 +792,9 @@ class _TimePickerTile extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: color.withOpacity(0.3)),
+          border: Border.all(color: color.withValues(alpha: 0.3)),
         ),
         child: Column(
           children: [
@@ -799,7 +814,7 @@ class _TimePickerTile extends StatelessWidget {
               style: TextStyle(
                 fontFamily: 'Inter',
                 fontSize: 16,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w700,
                 color: color,
               ),
             ),
@@ -810,7 +825,7 @@ class _TimePickerTile extends StatelessWidget {
   }
 }
 
-// ── Shared Layout ──────────────────────────────────────────────────────────────
+// ── Shared Layout Component ───────────────────────────────────────────────────
 
 class _TrackerTabLayout extends StatelessWidget {
   final Widget ring;
@@ -825,27 +840,24 @@ class _TrackerTabLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ring,
-            const SizedBox(height: 12),
-            Text(
-              goalText,
-              style: const TextStyle(
-                fontFamily: 'Inter',
-                fontSize: 12,
-                color: AppColors.textSecondaryDark,
-              ),
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(20, 28, 20, 100),
+      child: Column(
+        children: [
+          ring,
+          const SizedBox(height: 8),
+          Text(
+            goalText,
+            style: const TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 12,
+              color: AppColors.textSecondaryDark,
             ),
-            const SizedBox(height: 28),
-            actionButton,
-          ],
-        ),
+          ),
+          const SizedBox(height: 32),
+          actionButton,
+        ],
       ),
     );
   }

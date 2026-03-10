@@ -34,7 +34,7 @@ class GlassBottomNav extends StatelessWidget {
           decoration: BoxDecoration(
             color: isDark
                 ? AppColors.glassWhiteMed
-                : Colors.white.withOpacity(0.85),
+                : Colors.white.withValues(alpha: 0.85),
             borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
             border: Border(
               top: BorderSide(
@@ -102,7 +102,7 @@ class _NavButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: isActive
             ? BoxDecoration(
-                color: AppColors.primary.withOpacity(0.15),
+                color: AppColors.primary.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(16),
               )
             : null,

@@ -64,7 +64,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                     child: SafeArea(
                         child: Padding(
-                          padding: EdgeInsets.fromLTRB(20, 56.0 + 10, 20, 20),
+                          padding: const EdgeInsets.fromLTRB(20, 56.0 + 10, 20, 20),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.end,
@@ -78,9 +78,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 return Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      _greeting(),
-                                      style: const TextStyle(
+                                    const Text(
+                                      'Greeting', // placeholder for greeting logic if needed
+                                      style: TextStyle(
                                         fontFamily: 'Inter',
                                         fontSize: 14,
                                         color: Colors.white70,
@@ -129,9 +129,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   collapseMode: CollapseMode.parallax,
                 ),
-                title: Text(
+                title: const Text(
                   AppStrings.appName,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 17,
                     fontWeight: FontWeight.w700,
@@ -198,7 +198,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       color: AppColors.stepsColor,
                       value: state.totalSteps.formatted,
                       unit: 'steps',
-                      goal: '${state.stepsGoal.formatted}',
+                      goal: state.stepsGoal.formatted,
                       progress: state.totalSteps / state.stepsGoal,
                     ),
                     _AnimatedMetricCard(
@@ -209,7 +209,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       color: AppColors.caloriesColor,
                       value: state.totalCalories.formatted,
                       unit: 'kcal',
-                      goal: '${state.caloriesGoal.formatted}',
+                      goal: state.caloriesGoal.formatted,
                       progress: state.totalCalories / state.caloriesGoal,
                     ),
                     _AnimatedMetricCard(
@@ -220,7 +220,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       color: AppColors.sleepColor,
                       value: state.sleepHours.compact,
                       unit: 'hours',
-                      goal: '${state.sleepGoalHours.compact}',
+                      goal: state.sleepGoalHours.compact,
                       progress: state.sleepHours / state.sleepGoalHours,
                     ),
                   ],
@@ -233,13 +233,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
         );
       },
     );
-  }
-
-  String _greeting() {
-    final hour = DateTime.now().hour;
-    if (hour < 12) return 'Good morning ☀️';
-    if (hour < 17) return 'Good afternoon 🌤';
-    return 'Good evening 🌙';
   }
 }
 
@@ -327,7 +320,7 @@ class _AnimatedMetricCardState extends State<_AnimatedMetricCard>
                     borderRadius: BorderRadius.circular(10),
                     boxShadow: [
                       BoxShadow(
-                        color: widget.color.withOpacity(0.3),
+                        color: widget.color.withValues(alpha: 0.3),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -375,7 +368,7 @@ class _AnimatedMetricCardState extends State<_AnimatedMetricCard>
                 ),
                 TextSpan(
                   text: ' ${widget.unit}',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 11,
                     color: AppColors.textSecondaryDark,
@@ -393,7 +386,7 @@ class _AnimatedMetricCardState extends State<_AnimatedMetricCard>
                 curve: Curves.easeOutCubic,
                 builder: (context, value, _) => LinearProgressIndicator(
                   value: value,
-                  backgroundColor: widget.color.withOpacity(0.15),
+                  backgroundColor: widget.color.withValues(alpha: 0.15),
                   color: widget.color,
                   minHeight: 5,
                 ),
