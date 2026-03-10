@@ -142,7 +142,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
           BarChartRodData(
             toY: val.toDouble(),
             gradient: LinearGradient(
-              colors: [color.withOpacity(0.7), color],
+              colors: [color.withValues(alpha: 0.7), color],
               begin: Alignment.bottomCenter,
               end: Alignment.topCenter,
             ),
@@ -191,7 +191,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
           drawVerticalLine: false,
           horizontalInterval: maxY / 3,
           getDrawingHorizontalLine: (value) => FlLine(
-            color: Colors.white.withOpacity(0.08),
+            color: Colors.white.withValues(alpha: 0.08),
             strokeWidth: 1,
             dashArray: [4, 4],
           ),
@@ -230,7 +230,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
           drawVerticalLine: false,
           horizontalInterval: maxY / 3,
           getDrawingHorizontalLine: (value) => FlLine(
-            color: Colors.white.withOpacity(0.08),
+            color: Colors.white.withValues(alpha: 0.08),
             strokeWidth: 1,
             dashArray: [4, 4],
           ),
@@ -268,7 +268,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
           LineChartBarData(
             spots: spots,
             isCurved: true,
-            gradient: LinearGradient(colors: [color.withOpacity(0.6), color]),
+            gradient: LinearGradient(colors: [color.withValues(alpha: 0.6), color]),
             barWidth: 3,
             isStrokeCapRound: true,
             dotData: FlDotData(
@@ -284,7 +284,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
             belowBarData: BarAreaData(
               show: true,
               gradient: LinearGradient(
-                colors: [color.withOpacity(0.2), color.withOpacity(0.0)],
+                colors: [color.withValues(alpha: 0.2), color.withValues(alpha: 0.0)],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               ),
@@ -316,7 +316,7 @@ class _PeriodToggle extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.date_range_rounded, size: 14, color: AppColors.primary),
+            const Icon(Icons.date_range_rounded, size: 14, color: AppColors.primary),
             const SizedBox(width: 6),
             Text(
               isWeekly ? 'This Week' : 'Overview',

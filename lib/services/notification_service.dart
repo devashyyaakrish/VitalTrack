@@ -1,4 +1,5 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'dart:developer' as developer;
 
 /// Service for scheduling and managing local notifications
 class NotificationService {
@@ -29,7 +30,7 @@ class NotificationService {
       await _plugin.initialize(settings);
       _initialized = true;
     } catch (e) {
-      print('NotificationService init failed: $e. Using log-only mode.');
+      developer.log('NotificationService init failed: $e. Using log-only mode.');
     }
   }
 

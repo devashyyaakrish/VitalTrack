@@ -67,12 +67,12 @@ class _GlassInputFieldState extends State<GlassInputField> {
           duration: const Duration(milliseconds: 200),
           decoration: BoxDecoration(
             color: isDark
-                ? AppColors.glassWhite.withOpacity(_isFocused ? 0.12 : 0.08)
-                : Colors.white.withOpacity(_isFocused ? 0.90 : 0.75),
+                ? AppColors.glassWhite.withValues(alpha: _isFocused ? 0.12 : 0.08)
+                : Colors.white.withValues(alpha: _isFocused ? 0.90 : 0.75),
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
               color: _isFocused
-                  ? AppColors.primary.withOpacity(0.8)
+                  ? AppColors.primary.withValues(alpha: 0.8)
                   : (isDark ? AppColors.glassBorder : AppColors.borderLight),
               width: _isFocused ? 1.5 : 1.0,
             ),

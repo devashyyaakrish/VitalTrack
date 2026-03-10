@@ -72,7 +72,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                         borderRadius: BorderRadius.circular(24),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.primary.withOpacity(0.35),
+                            color: AppColors.primary.withValues(alpha: 0.35),
                             blurRadius: 24,
                             offset: const Offset(0, 8),
                           ),
@@ -99,7 +99,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                             style: TextStyle(
                               fontFamily: 'Inter',
                               fontSize: 13,
-                              color: Colors.white.withOpacity(0.8),
+                              color: Colors.white.withValues(alpha: 0.8),
                             ),
                           ),
                         ],
@@ -114,7 +114,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           // Age
-                          _SectionLabel(label: AppStrings.ageLabel),
+                          const _SectionLabel(label: AppStrings.ageLabel),
                           const SizedBox(height: 4),
                           Row(
                             children: [
@@ -123,10 +123,10 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                                   data: SliderThemeData(
                                     activeTrackColor: AppColors.primary,
                                     inactiveTrackColor:
-                                        AppColors.primary.withOpacity(0.2),
+                                        AppColors.primary.withValues(alpha: 0.2),
                                     thumbColor: AppColors.primary,
                                     overlayColor:
-                                        AppColors.primary.withOpacity(0.2),
+                                        AppColors.primary.withValues(alpha: 0.2),
                                   ),
                                   child: Slider(
                                     value: _age.toDouble(),
@@ -144,7 +144,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                           const SizedBox(height: 20),
 
                           // Gender
-                          _SectionLabel(label: AppStrings.genderLabel),
+                          const _SectionLabel(label: AppStrings.genderLabel),
                           const SizedBox(height: 10),
                           Row(
                             children: ['male', 'female', 'other'].map((g) {
@@ -158,7 +158,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                                     padding: const EdgeInsets.symmetric(vertical: 10),
                                     decoration: BoxDecoration(
                                       color: isSelected
-                                          ? AppColors.primary.withOpacity(0.2)
+                                          ? AppColors.primary.withValues(alpha: 0.2)
                                           : Colors.transparent,
                                       borderRadius: BorderRadius.circular(12),
                                       border: Border.all(
@@ -190,7 +190,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                           const SizedBox(height: 20),
 
                           // Height
-                          _SectionLabel(label: AppStrings.heightLabel),
+                          const _SectionLabel(label: AppStrings.heightLabel),
                           const SizedBox(height: 4),
                           Row(
                             children: [
@@ -199,10 +199,10 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                                   data: SliderThemeData(
                                     activeTrackColor: AppColors.secondary,
                                     inactiveTrackColor:
-                                        AppColors.secondary.withOpacity(0.2),
+                                        AppColors.secondary.withValues(alpha: 0.2),
                                     thumbColor: AppColors.secondary,
                                     overlayColor:
-                                        AppColors.secondary.withOpacity(0.2),
+                                        AppColors.secondary.withValues(alpha: 0.2),
                                   ),
                                   child: Slider(
                                     value: _heightCm,
@@ -222,7 +222,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                           const SizedBox(height: 20),
 
                           // Weight
-                          _SectionLabel(label: AppStrings.weightLabel),
+                          const _SectionLabel(label: AppStrings.weightLabel),
                           const SizedBox(height: 4),
                           Row(
                             children: [
@@ -231,10 +231,10 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                                   data: SliderThemeData(
                                     activeTrackColor: AppColors.accent,
                                     inactiveTrackColor:
-                                        AppColors.accent.withOpacity(0.2),
+                                        AppColors.accent.withValues(alpha: 0.2),
                                     thumbColor: AppColors.accent,
                                     overlayColor:
-                                        AppColors.accent.withOpacity(0.2),
+                                        AppColors.accent.withValues(alpha: 0.2),
                                   ),
                                   child: Slider(
                                     value: _weightKg,
@@ -302,9 +302,9 @@ class _ValueChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.15),
+        color: color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: color.withOpacity(0.4)),
+        border: Border.all(color: color.withValues(alpha: 0.4)),
       ),
       child: Text(
         label,

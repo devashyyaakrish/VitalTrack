@@ -63,11 +63,18 @@ class AppRouter {
           builder: (context, state, child) {
             // Need to determine index based on path for BottomNavBar
             int currentIndex = 0;
-            if (state.matchedLocation.startsWith('/trackers')) currentIndex = 1;
-            if (state.matchedLocation.startsWith('/habits')) currentIndex = 2;
-            if (state.matchedLocation.startsWith('/analytics'))
+            if (state.matchedLocation.startsWith('/trackers')) {
+              currentIndex = 1;
+            }
+            if (state.matchedLocation.startsWith('/habits')) {
+              currentIndex = 2;
+            }
+            if (state.matchedLocation.startsWith('/analytics')) {
               currentIndex = 3;
-            if (state.matchedLocation.startsWith('/settings')) currentIndex = 4;
+            }
+            if (state.matchedLocation.startsWith('/settings')) {
+              currentIndex = 4;
+            }
 
             return MainScreen(currentIndex: currentIndex, child: child);
           },

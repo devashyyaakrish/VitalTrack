@@ -80,7 +80,7 @@ class _HabitsScreenState extends State<HabitsScreen> {
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? AppColors.primary.withOpacity(0.2)
+                                ? AppColors.primary.withValues(alpha: 0.2)
                                 : AppColors.glassWhite,
                             shape: BoxShape.circle,
                             border: Border.all(
@@ -151,9 +151,6 @@ class _HabitsScreenState extends State<HabitsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // ignore: unused_local_variable - used to check theme
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return BlocConsumer<HabitBloc, HabitState>(
       listener: (context, state) {
         if (state.error != null) {
@@ -186,7 +183,7 @@ class _HabitsScreenState extends State<HabitsScreen> {
                     borderRadius: BorderRadius.circular(10),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.habitsColor.withOpacity(0.4),
+                        color: AppColors.habitsColor.withValues(alpha: 0.4),
                         blurRadius: 10,
                       ),
                     ],
@@ -256,7 +253,7 @@ class _EmptyHabitsState extends StatelessWidget {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.habitsColor.withOpacity(0.35),
+                    color: AppColors.habitsColor.withValues(alpha: 0.35),
                     blurRadius: 24,
                   ),
                 ],
@@ -290,7 +287,7 @@ class _EmptyHabitsState extends StatelessWidget {
               label: 'Create First Habit',
               icon: Icons.add_rounded,
               gradient: AppColors.habitsGradient,
-              glowColor: AppColors.habitsColor.withOpacity(0.4),
+              glowColor: AppColors.habitsColor.withValues(alpha: 0.4),
               onPressed: onAdd,
               width: 220,
             ),
@@ -338,7 +335,9 @@ class _HabitCardState extends State<_HabitCard>
     _opacity = Tween<double>(begin: 0, end: 1)
         .animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
     Future.delayed(Duration(milliseconds: widget.index * 50), () {
-      if (mounted) _controller.forward();
+      if (mounted) {
+        _controller.forward();
+      }
     });
   }
 
@@ -398,7 +397,7 @@ class _HabitCardState extends State<_HabitCard>
                       gradient: const LinearGradient(
                         colors: [Color(0xFFDC2626), Color(0xFFF87171)],
                       ),
-                      glowColor: AppColors.error.withOpacity(0.4),
+                      glowColor: AppColors.error.withValues(alpha: 0.4),
                       onPressed: () {
                         widget.onDelete();
                         Navigator.pop(ctx);
@@ -436,12 +435,12 @@ class _HabitCardState extends State<_HabitCard>
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: widget.isCompletedToday
-                    ? AppColors.success.withOpacity(0.2)
+                    ? AppColors.success.withValues(alpha: 0.2)
                     : AppColors.glassWhite,
                 shape: BoxShape.circle,
                 border: Border.all(
                   color: widget.isCompletedToday
-                      ? AppColors.success.withOpacity(0.5)
+                      ? AppColors.success.withValues(alpha: 0.5)
                       : AppColors.glassBorder,
                 ),
               ),
@@ -499,7 +498,7 @@ class _HabitCardState extends State<_HabitCard>
                 height: 36,
                 decoration: BoxDecoration(
                   color: widget.isCompletedToday
-                      ? AppColors.success.withOpacity(0.2)
+                      ? AppColors.success.withValues(alpha: 0.2)
                       : Colors.transparent,
                   shape: BoxShape.circle,
                   border: Border.all(

@@ -11,7 +11,7 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      colorScheme: ColorScheme.dark(
+      colorScheme: const ColorScheme.dark(
         primary: AppColors.primary,
         secondary: AppColors.secondary,
         surface: AppColors.surfaceDark,
@@ -105,7 +105,7 @@ class AppTheme {
           borderSide: const BorderSide(color: AppColors.error, width: 1),
         ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
-        hintStyle: TextStyle(
+        hintStyle: const TextStyle(
           color: AppColors.textSecondaryDark,
           fontSize: 14,
           fontFamily: 'Inter',
@@ -147,14 +147,14 @@ class AppTheme {
         }),
         trackColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return AppColors.primary.withOpacity(0.35);
+            return AppColors.primary.withValues(alpha: 0.35);
           }
           return AppColors.borderDark;
         }),
       ),
 
       // ── Tab Bar ───────────────────────────────────────────────────────────
-      tabBarTheme: TabBarThemeData(
+      tabBarTheme: const TabBarThemeData(
         labelColor: AppColors.primary,
         unselectedLabelColor: AppColors.textSecondaryDark,
         indicatorColor: AppColors.primary,
@@ -187,7 +187,7 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      colorScheme: ColorScheme.light(
+      colorScheme: const ColorScheme.light(
         primary: AppColors.primary,
         secondary: AppColors.secondary,
         surface: AppColors.surfaceLight,
@@ -276,7 +276,7 @@ class AppTheme {
           borderSide: const BorderSide(color: AppColors.error, width: 1),
         ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
-        hintStyle: TextStyle(
+        hintStyle: const TextStyle(
           color: AppColors.textSecondaryLight,
           fontSize: 14,
           fontFamily: 'Inter',
@@ -314,13 +314,13 @@ class AppTheme {
         }),
         trackColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return AppColors.primary.withOpacity(0.35);
+            return AppColors.primary.withValues(alpha: 0.35);
           }
           return Colors.grey.shade200;
         }),
       ),
 
-      tabBarTheme: TabBarThemeData(
+      tabBarTheme: const TabBarThemeData(
         labelColor: AppColors.primary,
         unselectedLabelColor: AppColors.textSecondaryLight,
         indicatorColor: AppColors.primary,

@@ -114,11 +114,6 @@ class DashboardCubit extends Cubit<DashboardState> {
       _sleepRepository.getTodaySleep(userId),
     ]);
 
-    final waterResult = results[0];
-    final stepResult = results[1];
-    final calorieResult = results[2];
-    final sleepResult = results[3];
-
     int totalWater =
         (results[0] as Either<Failure, List<WaterEntryEntity>>).fold(
       (_) => 0,
@@ -167,5 +162,3 @@ class DashboardCubit extends Cubit<DashboardState> {
   }
 }
 
-// ignore helper
-abstract class _EitherType {}
